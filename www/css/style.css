@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css?family=Acme');
+
+
+#contenedor
+{
+    margin-top: 100px;
+}
+#titulo h1{
+    text-align: center;
+    font-family: 'Acme', sans-serif;
+    font-size: 45px;
+    color: rgb(137, 46, 179);
+}
+
+#botones
+{
+    margin-top: 100px;
+    text-align: center;
+}
+
+#formulario
+{
+    margin-top: 50px;
+    text-align: center;
+}
+input[type=text], [type=password], select {
+    width: 50%;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 50%;
+    background-color: #4CAF50;
+    margin-bottom: 10px;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+table {     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 12px;    margin: 45px;     width: 480px; text-align: left;    border-collapse: collapse; }
+
+th {     font-size: 13px;     font-weight: normal;     padding: 8px;     background: #b9c9fe;
+    border-top: 4px solid #aabcfe;    border-bottom: 1px solid #fff; color: #039; }
+
+td {    padding: 8px;     background: #e8edff;     border-bottom: 1px solid #fff;
+    color: #669;    border-top: 1px solid transparent; }
+
+tr:hover td { background: #d0dafd; color: #339; }
+
+div {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+

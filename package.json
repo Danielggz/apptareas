@@ -1,0 +1,21 @@
+{
+  "name": "apptareas",
+  "version": "1.0.0",
+  "description": "aplicacion para gestionar tareas de usuarios de manera amena",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tareas",
+    "usuarios",
+    "gestion"
+  ],
+  "author": "dggz",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "mysql": "^2.15.0"
+  }
+}

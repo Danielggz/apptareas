@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>nuevo usuario</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js"></script>
+</head>
+
+<body>
+        <div id="contenedor">
+
+             <div id="titulo">
+                <h1>Nuevo usuario</h1>
+            </div>
+
+            <div id="formulario">
+                <form action="/nuevousu" method="post" id="formulario">
+                    <input type="text" name="nombre" id="nombre" placeholder="Introduce tu nombre completo" required>
+                    <input type="text" name="usuario" id="usuario" placeholder="Introduce nombre de usuario" required>
+                    <input type="password" name="pwd" id="pwd" placeholder="Introduce una contraseña" required>
+                    <input type="password" name="pwd2" id="pwd2" placeholder="Repite la contraseña" required>
+                    <input type="submit" id="enviar" disabled>
+                </form>
+            </div>
+
+            <div style="display: none" id="mensajes">
+                [mensaje]
+            </div>
+       </div > 
+        
+</body>
+
+</html>
