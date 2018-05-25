@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>nuevo usuario</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+        <div id="contenedor">
+
+             <div id="titulo">
+                <h1>Las tareas</h1>
+            </div>
+
+            <div id="acciones">
+                <table>
+                    <tr>
+                        <td> 
+                            <form action="/crear" method="GET" id="crear"> 
+                                <input type="submit" value="crear"/>
+                            </form> 
+                        </td>
+                        <td> 
+                            <form action="/modificar" method="GET" id="modificar"> 
+                                <input type="submit" value="modificar"/>
+                            </form>      
+                        </td>
+                        <td>
+                            <form action="/eliminar" method="GET" id="eliminar"> 
+                                <input type="submit" value="eliminar"/>
+                            </form>  
+                        </td>
+                        <td>
+                            <form action="/ver" method="GET" id="ver"> 
+                                <input type="submit" value="ver"/>
+                            </form>     
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="contenido">
+                [contenido]
+            </div>
+       </div > 
+        
+</body>
+
+</html>

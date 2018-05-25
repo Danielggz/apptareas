@@ -1,5 +1,6 @@
 window.onload=function()
 {
+    //NUEVOUSUARIO.HTML
     document.getElementById("pwd2").addEventListener("blur", function()
     {
         if(document.getElementById("pwd").value!=document.getElementById("pwd2").value)
