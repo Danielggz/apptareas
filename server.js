@@ -16,8 +16,8 @@ app.use(urlencodedParser);
 
 //COOKIES
 app.use(cookieSession({
-    name: 'prueba',
-    keys:['SIDprueba'],
+    name: 'Usuario',
+    keys:['SIDuser'],
     maxAge: 24*60*60*1000 //24h
 }));
 
@@ -87,14 +87,16 @@ app.post('/login', function(req, res){
                 console.log("LOGIN CORRECTO. HOLA " + resultado[0].nombre);
                 //cookie
                 req.session.user = usuario;
+                req.session.idUser = resultado[0].id;
                 console.log(req.session.user);
+                console.log(req.session.idUser);
                 res.redirect('/tareas');
             }
             else
             {
                 fs.readFile('./www/login.html', 'utf-8', function(err, text)
                 {
-                    text = text.replace("[mensaje]", "El usuario o la contraseña es incorrecto. Por favor vuelva a introducirlo");
+                    text = text.replace('class="ocultar">[mensaje]', 'class="mostrar">Usuario o contraseña incorrectos');
                     res.send(text);
                 });    
             }
@@ -159,13 +161,47 @@ app.get('/crear', function(req, res)
             <input type="text" name="fecha" id="fecha" placeholder="Fecha(dd/m/y)" required>
             <input type="text" name="hora" id="hora" placeholder="Hora" required>
             <input type="text" name="ejecutor" id="ejecutor" placeholder="Quien hace la tarea" required>
-            <input type="submit" id="enviar">
+            <input type="submit" id="enviar_nuevo">
         </form>
         `;
         
         text = text.replace("[contenido]", newtext);
         res.send(text);
       });
+});
+
+app.post('/crear', function(req, res)
+{
+    /*
+    var id= req.body.id;
+    var titulo = req.body.titulo;
+    var descripcion = req.body.descripcion;
+    var autor = req.body.autor;
+    var fecha = req.body.fecha;
+    var ejecutor = req.body.ejecutor;
+
+    
+    connection.query("SELECT id from tareas", function(error, resultado){
+        if(error)
+        {
+            throw error;
+        }
+        else
+        {
+
+            if(connection.query("UPDATE tareas SET titulo='" + titulo + "', descripcion='" + descripcion + "', autor='" + autor + "', fecha='" + fecha + "', ejecutor='" + ejecutor + "' WHERE ID=" + id))
+            {
+                console.log("BASE DE DATOS ACTUALIZADA");
+                res.redirect("/tareas");
+            }
+            
+            else{
+                console.log("NO SE HA ACTUALIZADO LA BASE DE DATOS POR ALGÚN MOTIVO");
+                res.redirect("/tareas");
+            }
+        }
+    });
+    */
 });
 
 app.get('/modificar', function(req, res)
@@ -184,7 +220,7 @@ app.get('/modificar', function(req, res)
             //     options += "<option value='" + iterator.id + "'>" + iterator.titulo  + "</option>";
             //     console.log(options);
             // }
-        var newtext = "Elige la tarea que quieres modificar </br> <select id='seleccion'>" + options + "</select> <input type='submit' value='enviar' id='enviar_mod'> <script src='js/script2.js'></script>";
+        var newtext = "Elige la tarea que quieres modificar </br> <select id='seleccion'>" + options + "</select> <input type='submit' value='enviar' id='enviar_mod'> <script src='js/modificar.js'></script>";
         
         text = text.replace("[contenido]", newtext);
         res.send(text);
@@ -203,11 +239,78 @@ app.get('/ajax_mod/:enviar_mod?', function(req, res){
                throw error;
            }
            else{
-            res.send(resultado);
+            res.send(JSON.stringify(resultado));
            }
         });
     }); 
 });
+
+app.post('/modificar', function(req, res)
+{
+    var id= req.body.id;
+    var titulo = req.body.titulo;
+    var descripcion = req.body.descripcion;
+    var autor = req.body.autor;
+    var fecha = req.body.fecha;
+    var ejecutor = req.body.ejecutor;
+
+    
+    connection.query("SELECT id from tareas", function(error, resultado){
+        if(error)
+        {
+            throw error;
+        }
+        else
+        {
+
+            if(connection.query("UPDATE tareas SET titulo='" + titulo + "', descripcion='" + descripcion + "', autor='" + autor + "', fecha='" + fecha + "', ejecutor='" + ejecutor + "' WHERE ID=" + id))
+            {
+                console.log("BASE DE DATOS ACTUALIZADA");
+                res.redirect("/tareas");
+            }
+            
+            else{
+                console.log("NO SE HA ACTUALIZADO LA BASE DE DATOS POR ALGÚN MOTIVO");
+                res.redirect("/tareas");
+            }
+        }
+    });
+});
+
+app.get('/currentUser', function(req, res)
+{
+    var usuario = req.session.user;
+
+    res.send(usuario);
+});
+
+app.get("/datosUser", function(req, res)
+{
+    fs.readFile('./www/tareas.html', 'utf-8', function(err, text)
+    {
+        console.log(req.session.idUser);
+        connection.query("SELECT * FROM usuario WHERE id=" + req.session.idUser, function(error, resultado)
+        {
+            if(error)
+            {
+                throw error;
+            }
+            else
+            {
+                var datos = {
+                    id:resultado[0].id,
+                    nombre:resultado[0].nombre,
+                    usuario:resultado[0].usuario
+                }
+                console.log(datos);
+                res.send(JSON.stringify(datos));
+            }
+        });
+    }); 
+    
+});
+
+
 
 
 /*

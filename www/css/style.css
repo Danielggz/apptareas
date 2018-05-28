@@ -24,7 +24,7 @@
     text-align: center;
 }
 input[type=text], [type=password], select {
-    width: 50%;
+    width: 70%;
     padding: 12px 20px;
     margin-bottom: 10px;
     display: inline-block;
@@ -34,7 +34,7 @@ input[type=text], [type=password], select {
 }
 
 input[type=submit] {
-    width: 50%;
+    width: 70%;
     background-color: #4CAF50;
     margin-bottom: 10px;
     color: white;
@@ -67,7 +67,7 @@ div {
 
 
 #acciones input[type=submit] {
-    width: 80%;
+    width: 70%;
     background-color: #4CAF50;
     margin-bottom: 10px;
     color: white;
@@ -75,4 +75,14 @@ div {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.ocultar
+{
+    display: none;
+}
+
+.mostrar
+{
+    display: block;
 }
