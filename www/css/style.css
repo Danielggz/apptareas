@@ -86,3 +86,18 @@ div {
 {
     display: block;
 }
+
+.loader {
+    border-radius: 50%;
+    border-top: 16px solid rgb(0, 255, 157);
+    border-right: 16px solid rgb(29, 245, 0);
+    border-bottom: 16px solid rgb(237, 252, 37);
+    border-left: 16px solid rgb(255, 1, 221);
+    width: 20px;
+    height: 20px;
+    animation: spin 0.01s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

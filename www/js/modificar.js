@@ -51,4 +51,36 @@ boton_mod.addEventListener("click", function()
     
 });
 
+/*
+this.document.getElementById("ejemplo").onclick = function(event)
+{
+  event.prevenDefault();
+  var req = new XMLHttpRequest();
+  req.open("POST", "/ejemplopost", true);
+  req.setRequestHeader("Content-type", "application/json");
+  req.addEventListener("load", function(){
+    if(req.response=="ok")
+    {
+      alert("datos actualizados");
+    }
+    else
+    {
+      alert("error al actualizar")
+    }
+  });
+
+  req.addEventListener("error", function()
+  {
+    console.log(req.response);
+  });
+
+  var datos = {
+    valor1: document.getElementById("valor1").value,
+    valor2: document.getElementById("valor2").value
+  }
+  req.send(JSON.stringify(datos));
+}
+
+*/ 
+
 

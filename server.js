@@ -46,7 +46,7 @@ app.get('/', function(req, res){
     
     //cookies
     req.session.views = (req.session.views || 0) + 1;
-    console.log("Visitas a la página: " + req.session.views);
+
 
     fs.readFile('./www/index.html', 'utf-8', function(err, text){
 
@@ -74,6 +74,8 @@ app.post('/login', function(req, res){
     var usuario = req.body.login;
     var pwd = req.body.pwd;
 
+    
+
     connection.query("SELECT * FROM usuarios where usuario='" + usuario + "' and pass='" + pwd + "'", function(error, resultado)
     {
         if(error)
@@ -88,8 +90,7 @@ app.post('/login', function(req, res){
                 //cookie
                 req.session.user = usuario;
                 req.session.idUser = resultado[0].id;
-                console.log(req.session.user);
-                console.log(req.session.idUser);
+
                 res.redirect('/tareas');
             }
             else
@@ -153,45 +154,44 @@ app.get('/crear', function(req, res)
 {
     fs.readFile('./www/tareas.html', 'utf-8', function(err, text){
 
-        var newtext = `
-        <form action='/crear' method='POST' id='nuevatarea'>
-            <input type="text" name="titulo" id="titulo" placeholder="Nombre de la tarea" required>
-            <input type="text" name="descripcion" id="descripcion" placeholder="Descripción" required>
-            <input type="text" name="autor" id="autor" placeholder="Autor" required>
-            <input type="text" name="fecha" id="fecha" placeholder="Fecha(dd/m/y)" required>
-            <input type="text" name="hora" id="hora" placeholder="Hora" required>
-            <input type="text" name="ejecutor" id="ejecutor" placeholder="Quien hace la tarea" required>
-            <input type="submit" id="enviar_nuevo">
-        </form>
-        `;
-        
-        text = text.replace("[contenido]", newtext);
-        res.send(text);
+        var options = "";
+        var newtext = ""
+        connection.query("SELECT * FROM usuarios", function(error, resultado)
+        {
+            for(var i=0; i<resultado.length;i++)
+            {
+                options += "<option value='" + resultado[i].id + "'>" + resultado[i].nombre  + "</option>";
+
+                newtext = `
+                <form action='/crear' method='POST' id='nuevatarea'>
+                <input type="text" name="titulo" id="titulo" placeholder="Nombre de la tarea" required>
+                <input type="text" name="descripcion" id="descripcion" placeholder="Descripción" required>
+                <select name='autor' id='autor'>  <option value="" disabled selected> Autor de la tarea </option> ` + options + `<select/>
+                <input type="text" name="fecha" id="fecha" value="0000-00-00 00:00:00" required>
+                <select name='ejecutor' id='ejecutor'>  <option value="" disabled selected> ¿Quién hace la tarea? </option> ` + options + `<select/>
+                <input type="submit" id="enviar_nuevo">
+                </form>
+                `;
+            }
+
+            text = text.replace("[contenido]", newtext);
+            res.send(text);
+        });  
       });
 });
 
 app.post('/crear', function(req, res)
 {
-    /*
-    var id= req.body.id;
+    
     var titulo = req.body.titulo;
     var descripcion = req.body.descripcion;
     var autor = req.body.autor;
     var fecha = req.body.fecha;
     var ejecutor = req.body.ejecutor;
 
-    
-    connection.query("SELECT id from tareas", function(error, resultado){
-        if(error)
-        {
-            throw error;
-        }
-        else
-        {
-
-            if(connection.query("UPDATE tareas SET titulo='" + titulo + "', descripcion='" + descripcion + "', autor='" + autor + "', fecha='" + fecha + "', ejecutor='" + ejecutor + "' WHERE ID=" + id))
+    if(connection.query("INSERT INTO tareas VALUES('', '" + titulo + "', '" + descripcion + "', " + autor + ", '" + fecha + "', " +  ejecutor + ", '')"))
             {
-                console.log("BASE DE DATOS ACTUALIZADA");
+                console.log("TAREA CREADA CON ÉXITO");
                 res.redirect("/tareas");
             }
             
@@ -199,9 +199,6 @@ app.post('/crear', function(req, res)
                 console.log("NO SE HA ACTUALIZADO LA BASE DE DATOS POR ALGÚN MOTIVO");
                 res.redirect("/tareas");
             }
-        }
-    });
-    */
 });
 
 app.get('/modificar', function(req, res)
@@ -277,58 +274,6 @@ app.post('/modificar', function(req, res)
     });
 });
 
-app.get('/currentUser', function(req, res)
-{
-    var usuario = req.session.user;
-
-    res.send(usuario);
-});
-
-app.get("/datosUser", function(req, res)
-{
-    fs.readFile('./www/tareas.html', 'utf-8', function(err, text)
-    {
-        console.log(req.session.idUser);
-        connection.query("SELECT * FROM usuario WHERE id=" + req.session.idUser, function(error, resultado)
-        {
-            if(error)
-            {
-                throw error;
-            }
-            else
-            {
-                var datos = {
-                    id:resultado[0].id,
-                    nombre:resultado[0].nombre,
-                    usuario:resultado[0].usuario
-                }
-                console.log(datos);
-                res.send(JSON.stringify(datos));
-            }
-        });
-    }); 
-    
-});
-
-
-
-
-/*
-app.post('/modificar', function(req, res)
-{
-
-    var opcion = req.query;
-    console.log(opcion);
-    fs.readFile('./www/tareas.html', 'utf-8', function(err, text)
-    {
-        connection.query("SELECT * FROM TAREAS", function(error, resultado)
-        {
-            for(var i=0; i<resultado.length;i++)   
-        });  
-    });  
-});
-*/
-
 app.get('/eliminar', function(req, res)
 {
     fs.readFile('./www/tareas.html', 'utf-8', function(err, text)
@@ -341,13 +286,90 @@ app.get('/eliminar', function(req, res)
                 options += "<option value='" + iterator.id + "'>" + iterator.titulo  + "</option>";
             }
 
-        var newtext = "<form action='/eliminar' method='POST' id='edit1'> Elige la tarea que quieres eliminar </br> <select>" + options + "</select> <input type='submit' id='enviar'> </form>";
+        var newtext = "<form action='/eliminar' method='POST' id='edit1'> Elige la tarea que quieres eliminar </br> <select name='tarea_del' id='tarea_del'>" + options + "</select> <input type='submit' id='enviar_del'> </form>";
         
         text = text.replace("[contenido]", newtext);
         res.send(text);
         });  
     });  
 });
+
+app.post('/eliminar', function(req, res){
+
+    var idtarea = req.body.tarea_del;
+    connection.query("DELETE FROM tareas WHERE id=" + idtarea);
+    console.log("TAREA ELIMINADA CON ÉXITO");
+    res.redirect('/tareas');
+
+});
+
+app.get('/currentUser', function(req, res)
+{
+    var usuario = req.session.user;
+
+    res.send(usuario);
+});
+
+app.get("/datosUser", function(req, res)
+{
+    fs.readFile('./www/tareas.html', 'utf-8', function(err, text)
+    {
+        connection.query("SELECT * FROM usuarios WHERE id=" + req.session.idUser, function(error, resultado)
+        {
+            if(error)
+            {
+                throw error;
+            }
+            else
+            {
+                setTimeout(function(){
+                    res.send(JSON.stringify(resultado));
+                }, 5000); //SIMULADOR DE LENTITUD
+            }
+        });
+    }); 
+    
+});
+
+app.post("/datosUser", function(req, res)
+{
+    var id= req.body.id;
+    var nombre = req.body.nombre;
+    var pwd = req.body.pwd;
+
+    
+    connection.query("SELECT id from usuarios", function(error, resultado){
+        if(error)
+        {
+            throw error;
+        }
+        else
+        {
+
+            if(connection.query("UPDATE usuarios SET nombre='" + nombre + "', pass='" + pwd + "' WHERE ID=" + id))
+            {
+                console.log("BASE DE DATOS USUARIOS ACTUALIZADA");
+                res.redirect("/tareas");
+            }
+            
+            else{
+                console.log("NO SE HA ACTUALIZADO LA BASE DE DATOS POR ALGÚN MOTIVO");
+                res.redirect("/tareas");
+            }
+        }
+    });
+});
+
+app.get("/cerrarSesion", function(req, res)
+{
+    req.session.user= null;
+    req.session.idUser = null;
+
+    res.send();
+});
+
+
+
 
 
 
