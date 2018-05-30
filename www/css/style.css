@@ -49,15 +49,15 @@ input[type=submit]:hover {
 }
 
 table {     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-    font-size: 12px;    margin: 45px;     width: 480px; text-align: left;    border-collapse: collapse; }
+    font-size: 18px;    margin: 45px;     width: 600px; text-align: left;    border-collapse: collapse; }
 
-th {     font-size: 13px;     font-weight: normal;     padding: 8px;     background: #b9c9fe;
-    border-top: 4px solid #aabcfe;    border-bottom: 1px solid #fff; color: #039; }
+tr {     font-size: 16px;     font-weight: normal;     padding: 8px;     background: #b9c9fe;
+    border-top: 4px solid #befeaa;    border-bottom: 1px solid #fff; color: #b9c9fe; }
 
 td {    padding: 8px;     background: #e8edff;     border-bottom: 1px solid #fff;
-    color: #669;    border-top: 1px solid transparent; }
+    color: rgb(63, 170, 63);    border-top: 1px solid transparent; }
 
-tr:hover td { background: #d0dafd; color: #339; }
+tr:hover td { background: #d0dafd; color: rgb(24, 124, 15); }
 
 div {
     border-radius: 5px;
@@ -86,6 +86,32 @@ div {
 {
     display: block;
 }
+
+#acciones
+{
+    width: 1000px;
+}
+
+.addTarea
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: absolute;
+    left: 640px;
+    top: 480px;
+    background-color: #4CAF50;
+    text-align: center;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+}
+.addTarea a{
+    font-size: 75px;
+    color: white;
+    text-decoration: none;
+}
+
 
 .loader {
     border-radius: 50%;

@@ -4,11 +4,17 @@ var boton_mod = document.getElementById("enviar_mod");
 
 boton_mod.addEventListener("click", function()
 {
+  var select = document.getElementById('seleccion').value
+  var options = "";
   var id;
   var titulo;
   var descripcion;
   var autor;
   var fecha;
+  var estado;
+  var idUsu;
+  var nombreUsu;
+
   
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() 
@@ -16,15 +22,25 @@ boton_mod.addEventListener("click", function()
       if (this.readyState == 4 && this.status == 200) 
       {
         var arrayTareas = JSON.parse(this.response); //DESERIALIZAR ARRAY
-        console.log(arrayTareas);
         for (const iterator of arrayTareas) 
         {
-          id = iterator.id;
-          titulo = iterator.titulo;
-          descripcion = iterator.descripcion;
-          autor = iterator.autor;
-          fecha = iterator.fecha; 
-          ejecutor = iterator.ejecutor;
+          if(iterator.id == select)
+          {
+            id = iterator.id;
+            titulo = iterator.titulo;
+            descripcion = iterator.descripcion;
+            autor = iterator.autor;
+            fecha = iterator.fecha; 
+            ejecutor = iterator.ejecutor;
+            estado = iterator.estado;
+          }
+          else{
+            idUsu = iterator.idUsu;
+            nombreUsu = iterator.nombreUsu;
+            optionsAutor+="<option value=" + idUsu + "> " + nombreUsu + " </option>";
+          }
+          
+          
         }
         document.getElementById("contenido").innerHTML = `
         <form action='/modificar' method='POST'>
@@ -34,19 +50,30 @@ boton_mod.addEventListener("click", function()
           <label for='descripcion'> Descripcion: </label>
           <input type="text" name="descripcion" id="descripcion" value='` + descripcion + `' required><br/>
           <label for='autor'> Autor: </label>
-          <input type="text" name="autor" id="autor" value=` + autor + ` required><br/>
+          <select name='autor'>
+            <option selected> ${autor} </option>
+            ${options}
+          </select><br/>
           <label for='fecha'> Fecha: </label>
           <input type="text" name="fecha" id="fecha" value=` + fecha + ` required><br/>
           <label for='ejecutor'> ejecutor: </label>
-          <input type="text" name="ejecutor" id="ejecutor" value=` + ejecutor + ` required><br/>
+          <select name='autor'>
+            <option selected> ${ejecutor} </option>
+            ${options}
+          </select><br/>
+          <label for='estado'> Estado: </label>
+          <select name='estado' id='estado'>
+            <option value='0'> En proceso </option>
+            <option value='1'> Finalizada </option> 
+          </select>
           <input type="submit" id="enviar_form">
 
         </form>
         `
       }
     };
-    var select = document.getElementById('seleccion').value;
-    xhttp.open("GET", "/ajax_mod?enviar_mod="+ select, true);
+    ;
+    xhttp.open("GET", "/ajax_mod", true);
     xhttp.send();
     
 });

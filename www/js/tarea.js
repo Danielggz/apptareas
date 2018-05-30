@@ -1,5 +1,7 @@
 window.onload=function()
 { 
+    
+
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() 
     {
@@ -15,7 +17,15 @@ window.onload=function()
 
     var datosUser = document.getElementById("datosUser");
     var cerrarSesion = document.getElementById("cerrarSesion");
- 
+    var botonVer = document.getElementById("verTareas");
+    var botonAdd = document.getElementById("addTarea");
+
+    botonVer.addEventListener("click", function(){
+        botonAdd.setAttribute("class", "");
+        botonAdd.setAttribute("class", "addTarea");
+        verTablaTareas();
+    });
+
     datosUser.addEventListener("click", function()
     {
   
@@ -67,4 +77,56 @@ window.onload=function()
         xhttp.open("GET", "/cerrarSesion", true);
         xhttp.send();
     });
+}
+
+function verTablaTareas()
+{
+    var req = new XMLHttpRequest();
+    req.open('GET', '/verTareas', true);
+
+    req.addEventListener("load", function()
+    {
+        llenarTablaTareas(JSON.parse(req.response));
+    });
+    req.addEventListener("error", function(err){
+
+    });
+    req.send(null);
+}
+
+function llenarTablaTareas(listaTareas)
+{
+    var text = "";
+    var cols = "";
+    for (const iterator of listaTareas) {
+        let filas = 
+        `
+        <tr>
+        <td>${iterator.titulo}</td>
+        <td>${iterator.descripcion}</td>
+        <td>${iterator.autor}</td>
+        <td>${iterator.fecha}</td>
+        <td>${iterator.ejecutor}</td>
+        <td>${iterator.estado}</td>
+
+        </tr>
+        `
+        cols+=filas;
+    }
+    text = `
+    <table>
+        <thead>
+            <td> Titulo </td>
+            <td> Descripción </td>
+            <td> Autor </td>
+            <td> Fecha </td>
+            <td> Ejecutor </td>
+            <td> Estado </td>
+        </thead>
+        <tbody>
+        ${cols}
+        </tbody>
+    </table>
+    `;
+    document.getElementById("contenido").innerHTML = text;
 }

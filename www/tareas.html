@@ -18,67 +18,80 @@
             </div>
 
             <div id="acciones">
-                <table>
-                    <thead>
-                        TAREAS
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td> 
-                                <form action="/crear" method="GET" id="crear"> 
-                                    <input type="submit" value="Nueva"/>
-                                </form> 
-                            </td>
-                            <td> 
-                                <form action="/modificar" method="GET" id="modificar"> 
-                                    <input type="submit" value="Modificar"/>
-                                </form>      
-                            </td>
-                            <td>
-                                <form action="/eliminar" method="GET" id="eliminar"> 
-                                    <input type="submit" value="Eliminar"/>
-                                </form>  
-                            </td>
-                            <td>
-                                
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div id="tablaTareas">
+                    <table>
+                        <thead>
+                            TAREAS
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> 
+                                    <form action="/crear" method="GET" id="crear"> 
+                                        <input type="submit" value="Nueva"/>
+                                    </form> 
+                                </td>
+                                <td> 
+                                    <form action="/modificar" method="GET" id="modificar"> 
+                                        <input type="submit" value="Modificar"/>
+                                    </form>      
+                                </td>
+                                <td>
+                                    <form action="/eliminar" method="GET" id="eliminar"> 
+                                        <input type="submit" value="Eliminar"/>
+                                    </form>  
+                                </td>
+                                <td>
+                                    <input type="submit" id="verTareas" value="Ver tareas"/>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="addTarea" class='ocultar'>
+                    <a href="/crear"> + </a>
+                </div>
 
                 <div id="contenido">
                     [contenido]
                 </div>
-
-                <table>
-                    <thead>
-                        USUARIOS
-                        <div id="currentUser">
-                            [usuario actual]
-                        </div>
-                    </thead>
-                    
-                    <tbody>
-                        <tr>
-                            <td>
-                                <input type="submit" value="Modificar usuario" id="datosUser"/>
-                            </td>
-                            <td>
-                                <input type="submit" value="Cerrar sesión" id="cerrarSesion"/>
-                            </td>
-                        </tr>
-                    </tbody>
-                    
-                </table>
+                
+                <div id="tablaUsuarios">
+                    <table>
+                        <thead>
+                            USUARIOS
+                            <div id="currentUser">
+                                [usuario actual]
+                            </div>
+                        </thead>
+                        
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="submit" value="Modificar usuario" id="datosUser"/>
+                                </td>
+                                <td>
+                                    <input type="submit" value="Cerrar sesión" id="cerrarSesion"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div id="contenido2">
                     <div class="loader ocultar" id="loader"></div>
                     [contenido2]
                 </div>
 
+                
+
                 <div id="mensajes">
 
                 </div>
+
+                
             </div>
 
             

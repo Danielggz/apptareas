@@ -150,6 +150,24 @@ app.get('/tareas', function(req, res)
       });
 });
 
+app.get('/verTareas', function(req, res){
+    connection.query(`
+    SELECT tareas.id, titulo, descripcion, usuarios1.nombre as autor, usuarios2.nombre as ejecutor, fecha, estado 
+    FROM tareas
+    INNER JOIN usuarios as usuarios1 ON tareas.autor = usuarios1.id
+    INNER JOIN usuarios as usuarios2 ON tareas.ejecutor = usuarios2.id
+    `, function(error, resultado){
+        if(error)
+        {
+            throw error;
+        }
+        else{
+            res.send(JSON.stringify(resultado));
+        }
+    });
+
+});
+
 app.get('/crear', function(req, res)
 {
     fs.readFile('./www/tareas.html', 'utf-8', function(err, text){
@@ -189,16 +207,61 @@ app.post('/crear', function(req, res)
     var fecha = req.body.fecha;
     var ejecutor = req.body.ejecutor;
 
-    if(connection.query("INSERT INTO tareas VALUES('', '" + titulo + "', '" + descripcion + "', " + autor + ", '" + fecha + "', " +  ejecutor + ", '')"))
-            {
-                console.log("TAREA CREADA CON ÉXITO");
-                res.redirect("/tareas");
-            }
-            
-            else{
-                console.log("NO SE HA ACTUALIZADO LA BASE DE DATOS POR ALGÚN MOTIVO");
-                res.redirect("/tareas");
-            }
+    connection.query("INSERT INTO tareas VALUES('', '" + titulo + "', '" + descripcion + "', " + autor + ", '" + fecha + "', " +  ejecutor + ", '')", function(error, resultado1)
+    {
+        if(error)
+        {
+            throw error;
+        }
+        else{
+            console.log("TAREA CREADA CON ÉXITO");
+            connection.query('SELECT * FROM tareas', function(error, resultado2){
+                if(error)
+                {
+                    console.log('ERROR' + error);
+                    throw error;
+                }
+                else
+                {
+                    fs.readFile('./www/tareas.html', 'utf-8', function(err, text){
+
+                        var cols = "";
+                        var rows = "";
+                        var newtext = ""
+                        connection.query("SELECT * FROM tareas", function(error, resultado)
+                        {
+                            for (const iterator of resultado) {
+                                cols += "<tr id='" + iterator.id + "'>";
+                                rows += "<td>" + iterator.titulo +"</td> <td>" + iterator.descripcion + "</td> <td>" + iterator.autor + "</td> <td>" + iterator.fecha + "</td> <td>" + iterator.ejecutor + "</td> <td>" + iterator.estado + "</td></tr>";
+                            }
+                
+                            newtext=`
+                                <table id='tareasTable'>
+                                    <thead>
+                                        <tr>
+                                            <td> Titulo </td>
+                                            <td> Descripción </td>
+                                            <td> Autor </td>
+                                            <td> Fecha </td>
+                                            <td> Ejecutor </td>
+                                            <td> Estado </td>
+                                        </tr>
+                                        
+                                    </thead>
+                                    <tbody>
+                                        ${cols}${rows}
+                                    </tbody>
+                                </table>
+                            `;
+                
+                            text = text.replace("[contenido]", newtext);
+                            res.send(text);
+                        });  
+                      });
+                }
+            });
+        }
+    });
 });
 
 app.get('/modificar', function(req, res)
@@ -225,12 +288,16 @@ app.get('/modificar', function(req, res)
     });  
 });
 
-app.get('/ajax_mod/:enviar_mod?', function(req, res){
+app.get('/ajax_mod', function(req, res){
     fs.readFile('./www/tareas.html', 'utf-8', function(err, text)
     {
         var formulario = "";
-        var id = req.query.enviar_mod;
-        connection.query("SELECT * FROM TAREAS WHERE tareas.id=" + id, function(error, resultado){
+        connection.query(`
+        SELECT tareas.id, titulo, usuarios1.id as idautor, usuarios2.id as idejecutor, descripcion, usuarios1.nombre as autor, usuarios2.nombre as ejecutor, fecha, estado
+        FROM tareas
+        RIGHT JOIN usuarios as usuarios1 ON tareas.autor = usuarios1.id
+        RIGHT JOIN usuarios as usuarios2 ON tareas.ejecutor = usuarios2.id
+        `, function(error, resultado){
            if(error)
            {
                throw error;
@@ -250,6 +317,7 @@ app.post('/modificar', function(req, res)
     var autor = req.body.autor;
     var fecha = req.body.fecha;
     var ejecutor = req.body.ejecutor;
+    var estado = req.body.estado;
 
     
     connection.query("SELECT id from tareas", function(error, resultado){
@@ -260,15 +328,54 @@ app.post('/modificar', function(req, res)
         else
         {
 
-            if(connection.query("UPDATE tareas SET titulo='" + titulo + "', descripcion='" + descripcion + "', autor='" + autor + "', fecha='" + fecha + "', ejecutor='" + ejecutor + "' WHERE ID=" + id))
+            if(connection.query("UPDATE tareas SET titulo='" + titulo + "', descripcion='" + descripcion + "', autor='" + autor + "', fecha='" + fecha + "', ejecutor='" + ejecutor + "', estado=" + estado + " WHERE ID=" + id))
             {
                 console.log("BASE DE DATOS ACTUALIZADA");
-                res.redirect("/tareas");
+                fs.readFile('./www/tareas.html', 'utf-8', function(err, text){
+
+                    var cols = "";
+                    var rows = "";
+                    var newtext = ""
+                    connection.query(`
+                    SELECT tareas.id, titulo, descripcion, usuarios1.nombre as autor, usuarios2.nombre as ejecutor, fecha, estado 
+                    FROM tareas
+                    INNER JOIN usuarios as usuarios1 ON tareas.autor = usuarios1.id
+                    INNER JOIN usuarios as usuarios2 ON tareas.ejecutor = usuarios2.id
+                    `, function(error, resultado)
+                    {
+                        for (const iterator of resultado) {
+                            cols += "<tr id='" + iterator.id + "'>";
+                            rows += "<td>" + iterator.titulo +"</td> <td>" + iterator.descripcion + "</td> <td>" + iterator.autor + "</td> <td>" + iterator.fecha + "</td> <td>" + iterator.ejecutor + "</td> <td>" + iterator.estado + "</td></tr>";
+                        }
+            
+                        newtext=`
+                            <table id='tareasTable'>
+                                <thead>
+                                    <tr>
+                                        <td> Titulo </td>
+                                        <td> Descripción </td>
+                                        <td> Autor </td>
+                                        <td> Fecha </td>
+                                        <td> Ejecutor </td>
+                                        <td> Estado </td>
+                                    </tr>
+                                    
+                                </thead>
+                                <tbody>
+                                    ${cols}${rows}
+                                </tbody>
+                            </table>
+                        `;
+            
+                        text = text.replace("[contenido]", newtext);
+                        res.send(text);
+                    });  
+                  });
             }
             
             else{
                 console.log("NO SE HA ACTUALIZADO LA BASE DE DATOS POR ALGÚN MOTIVO");
-                res.redirect("/tareas");
+                resultado.redirect("/tareas");
             }
         }
     });
@@ -403,4 +510,9 @@ function connectBD(usuario, pass)
        console.log('Conexion correcta. Conectado como' + usuario);
     }
   });
+}
+
+function tablaTareas(res)
+{
+    
 }
