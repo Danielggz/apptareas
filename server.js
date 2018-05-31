@@ -152,7 +152,7 @@ app.get('/tareas', function(req, res)
 
 app.get('/verTareas', function(req, res){
     connection.query(`
-    SELECT tareas.id, titulo, descripcion, usuarios1.nombre as autor, usuarios2.nombre as ejecutor, fecha, estado 
+    SELECT tareas.id, titulo, descripcion, usuarios1.nombre as autor, usuarios2.nombre as ejecutor, fecha, estado, usuarios1.id as autorid, usuarios2.id as ejecutorid
     FROM tareas
     INNER JOIN usuarios as usuarios1 ON tareas.autor = usuarios1.id
     INNER JOIN usuarios as usuarios2 ON tareas.ejecutor = usuarios2.id
@@ -162,6 +162,32 @@ app.get('/verTareas', function(req, res){
             throw error;
         }
         else{
+            for(let i=0; i<resultado.length; i++)
+            {
+                var d=new Date(String(resultado[i].fecha));
+
+                var formatFecha = [d.getDate(),d.getMonth(),d.getFullYear()].join('/');
+                resultado[i].fecha = formatFecha;
+            }
+            resultado.forEach(element => {
+                if(req.session.idUser==element.autorid&&req.session.idUser==element.ejecutorid)
+                {
+                    element.permiso = 0; //AUTOR Y EJECUTOR
+                }
+                if(req.session.idUser==element.autorid&&req.session.idUser!=element.ejecutorid)
+                {
+                    element.permiso = 1; //AUTOR
+                }
+                if(req.session.idUser!=element.autorid&&req.session.idUser==element.ejecutorid)
+                {
+                    element.permiso = 2; //EJECUTOR
+                }
+                if(req.session.idUser!=element.autorid&&req.session.idUser!=element.ejecutorid)
+                {
+                    element.permiso = 3; //NADA
+                }
+                    
+            });
             res.send(JSON.stringify(resultado));
         }
     });
@@ -264,23 +290,39 @@ app.post('/crear', function(req, res)
     });
 });
 
-app.get('/modificar', function(req, res)
+app.get('/modificar/:id_mod?', function(req, res)
 {
+
+    var id_mod = req.query.id_mod;
+    var titulo_mod = req.query.titulo_mod;
     fs.readFile('./www/tareas.html', 'utf-8', function(err, text)
     {
         var options = "";
+        var titulo_mod = ""
         connection.query("SELECT * FROM TAREAS", function(error, resultado)
         {
             for(var i=0; i<resultado.length;i++)
             {
+                if(resultado[i].id == id_mod)
+                {
+                    titulo_mod = resultado[i].titulo;
+                }
                 options += "<option value='" + resultado[i].id + "'>" + resultado[i].titulo  + "</option>";
+
             }
 
             // for (const iterator of resultado) {
             //     options += "<option value='" + iterator.id + "'>" + iterator.titulo  + "</option>";
             //     console.log(options);
             // }
-        var newtext = "Elige la tarea que quieres modificar </br> <select id='seleccion'>" + options + "</select> <input type='submit' value='enviar' id='enviar_mod'> <script src='js/modificar.js'></script>";
+        if(id_mod != null && titulo_mod!=null)
+        {
+            var newtext = "Elige la tarea que quieres modificar </br> <select id='seleccion'><option value=" + id_mod + " selected> " + titulo_mod + " </option> <" + options + "</select> <input type='submit' value='enviar' id='enviar_mod'> <script src='js/modificar.js'></script>";
+        }
+        else
+        {
+            var newtext = "Elige la tarea que quieres modificar </br> <select id='seleccion'><" + options + "</select> <input type='submit' value='enviar' id='enviar_mod'> <script src='js/modificar.js'></script>";
+        }
         
         text = text.replace("[contenido]", newtext);
         res.send(text);
@@ -381,8 +423,10 @@ app.post('/modificar', function(req, res)
     });
 });
 
-app.get('/eliminar', function(req, res)
+app.get('/eliminar/:id_del?', function(req, res)
 {
+    var id_del = req.query.id_del;
+    var titulo_del = "";
     fs.readFile('./www/tareas.html', 'utf-8', function(err, text)
     {
         var options = "";
@@ -390,11 +434,21 @@ app.get('/eliminar', function(req, res)
         {
             for (const iterator of resultado)
             {
+                if(iterator.id == id_del)
+                {
+                    titulo_del = iterator.titulo;
+                }
                 options += "<option value='" + iterator.id + "'>" + iterator.titulo  + "</option>";
             }
 
-        var newtext = "<form action='/eliminar' method='POST' id='edit1'> Elige la tarea que quieres eliminar </br> <select name='tarea_del' id='tarea_del'>" + options + "</select> <input type='submit' id='enviar_del'> </form>";
-        
+            if(id_del != null)
+            {
+                var newtext = "Elige la tarea que quieres eliminar </br> <select id='seleccion'><option value=" + id_del + " selected> " + titulo_del + " </option> <" + options + "</select> <input type='submit' value='enviar' id='enviar_mod'> <script src='js/modificar.js'></script>";
+            }
+            else
+            {
+                var newtext = "Elige la tarea que quieres eliminar </br> <select id='seleccion'><" + options + "</select> <input type='submit' value='enviar' id='enviar_mod'> <script src='js/modificar.js'></script>";
+            }        
         text = text.replace("[contenido]", newtext);
         res.send(text);
         });  

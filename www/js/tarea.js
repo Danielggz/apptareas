@@ -1,7 +1,6 @@
 window.onload=function()
 { 
     
-
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() 
     {
@@ -19,6 +18,7 @@ window.onload=function()
     var cerrarSesion = document.getElementById("cerrarSesion");
     var botonVer = document.getElementById("verTareas");
     var botonAdd = document.getElementById("addTarea");
+
 
     botonVer.addEventListener("click", function(){
         botonAdd.setAttribute("class", "");
@@ -98,20 +98,48 @@ function llenarTablaTareas(listaTareas)
 {
     var text = "";
     var cols = "";
+    var filas = "";
     for (const iterator of listaTareas) {
-        let filas = 
-        `
-        <tr>
-        <td>${iterator.titulo}</td>
-        <td>${iterator.descripcion}</td>
-        <td>${iterator.autor}</td>
-        <td>${iterator.fecha}</td>
-        <td>${iterator.ejecutor}</td>
-        <td>${iterator.estado}</td>
+        let permisos = '';
+        switch(iterator.permiso){
+            case 0:
+                permisos = `
+                <a id='botonMod${iterator.id}' onclick='modificar(${iterator.id});'> <i class="fas fa-pen-square"> </i> </a>
+                <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i> </i> </a>
+                `
+            break;
 
-        </tr>
-        `
+            case 1:
+                permisos = `
+                <a id='botonMod${iterator.id}' onclick='modificar(${iterator.id});'> <i class="fas fa-pen-square"> </i> </a>
+                <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i> </i> </a>`
+            break;
+
+            case 2:
+                permisos = `
+                <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i> </i> </a>`
+            break;
+
+            case 3:
+            break;
+        }
+
+        filas = `
+            <tr>
+            <td>${iterator.titulo}</td>
+            <td>${iterator.descripcion}</td>
+            <td>${iterator.autor}</td>
+            <td>${iterator.fecha}</td>
+            <td>${iterator.ejecutor}</td>
+            <td>${iterator.estado}</td>
+            <td>
+            ${permisos}
+            </td>
+            </tr>
+            `
         cols+=filas;
+        
+        
     }
     text = `
     <table>
@@ -122,6 +150,7 @@ function llenarTablaTareas(listaTareas)
             <td> Fecha </td>
             <td> Ejecutor </td>
             <td> Estado </td>
+            <td> Acciones </td>
         </thead>
         <tbody>
         ${cols}
@@ -129,4 +158,16 @@ function llenarTablaTareas(listaTareas)
     </table>
     `;
     document.getElementById("contenido").innerHTML = text;
+}
+
+function modificar(id)
+{
+    var botonMod = document.getElementById("botonMod" + id);
+    botonMod.setAttribute("href", "/modificar?id_mod=" + id);
+}
+
+function eliminar(id)
+{
+    var botonDel= document.getElementById("botonDel" + id);
+    botonDel.setAttribute('href', '/eliminar?id_del=' + id);
 }

@@ -1,10 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Acme');
+/* FONT AWESOME */
 
-
-#contenedor
-{
-    margin-top: 100px;
-}
 #titulo h1{
     text-align: center;
     font-family: 'Acme', sans-serif;
@@ -49,7 +45,7 @@ input[type=submit]:hover {
 }
 
 table {     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-    font-size: 18px;    margin: 45px;     width: 600px; text-align: left;    border-collapse: collapse; }
+    font-size: 18px;    margin: 45px;     width: 1000px; text-align: left;    border-collapse: collapse; }
 
 tr {     font-size: 16px;     font-weight: normal;     padding: 8px;     background: #b9c9fe;
     border-top: 4px solid #befeaa;    border-bottom: 1px solid #fff; color: #b9c9fe; }
@@ -98,8 +94,8 @@ div {
     align-items: center;
     justify-content: space-around;
     position: absolute;
-    left: 640px;
-    top: 480px;
+    left: 130px;
+    top: 380px;
     background-color: #4CAF50;
     text-align: center;
     height: 35px;
@@ -126,4 +122,8 @@ div {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+a{
+    text-decoration: none;
 }

@@ -5,15 +5,14 @@ var boton_mod = document.getElementById("enviar_mod");
 boton_mod.addEventListener("click", function()
 {
   var select = document.getElementById('seleccion').value
-  var options = "";
+  var optionsAutor = "";
+  var optionsEjecutor = "";
   var id;
   var titulo;
   var descripcion;
   var autor;
   var fecha;
   var estado;
-  var idUsu;
-  var nombreUsu;
 
   
     var xhttp = new XMLHttpRequest();
@@ -35,9 +34,8 @@ boton_mod.addEventListener("click", function()
             estado = iterator.estado;
           }
           else{
-            idUsu = iterator.idUsu;
-            nombreUsu = iterator.nombreUsu;
-            optionsAutor+="<option value=" + idUsu + "> " + nombreUsu + " </option>";
+            optionsAutor+="<option value=" + iterator.id + "> " + iterator.autor + " </option>";
+            optionsEjecutor+="<option value=" + iterator.id + "> " + iterator.ejecutor + " </option>";
           }
           
           
@@ -52,14 +50,14 @@ boton_mod.addEventListener("click", function()
           <label for='autor'> Autor: </label>
           <select name='autor'>
             <option selected> ${autor} </option>
-            ${options}
+            ${optionsAutor}
           </select><br/>
           <label for='fecha'> Fecha: </label>
           <input type="text" name="fecha" id="fecha" value=` + fecha + ` required><br/>
           <label for='ejecutor'> ejecutor: </label>
           <select name='autor'>
             <option selected> ${ejecutor} </option>
-            ${options}
+            ${optionsEjecutor}
           </select><br/>
           <label for='estado'> Estado: </label>
           <select name='estado' id='estado'>
