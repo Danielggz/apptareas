@@ -1,6 +1,16 @@
 window.onload=function()
 { 
-    
+    var contenido = document.getElementById("contenido");
+    var contenido2 = document.getElementById("contenido2");
+    console.log(contenido);
+    if(contenido.innerText ==  "[contenido]")
+    {
+        verTablaTareas();
+    }
+
+
+
+
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() 
     {
@@ -101,27 +111,39 @@ function llenarTablaTareas(listaTareas)
     var filas = "";
     for (const iterator of listaTareas) {
         let permisos = '';
+        let newestado ='';
+
         switch(iterator.permiso){
             case 0:
                 permisos = `
                 <a id='botonMod${iterator.id}' onclick='modificar(${iterator.id});'> <i class="fas fa-pen-square"> </i> </a>
-                <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i> </i> </a>
+                <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i></a>
+                <a id='botonEst${iterator.id}' onclick='cambioEstado(${iterator.id}, ${iterator.estado});'> <i class="fas fa-check-square"></i> </a>
                 `
             break;
 
             case 1:
                 permisos = `
                 <a id='botonMod${iterator.id}' onclick='modificar(${iterator.id});'> <i class="fas fa-pen-square"> </i> </a>
-                <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i> </i> </a>`
+                <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i> </a>`
             break;
 
             case 2:
                 permisos = `
-                <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i> </i> </a>`
+                <a id='botonEst${iterator.id}' onclick='cambioEstado(${iterator.id}, ${iterator.estado});'> <i class="fas fa-check-square"></i> </a>
+                `
             break;
 
             case 3:
             break;
+        }
+
+        if(iterator.estado==0)
+        {
+            newestado = 'En proceso';
+        }
+        else{
+            newestado = 'Finalizada';
         }
 
         filas = `
@@ -131,7 +153,7 @@ function llenarTablaTareas(listaTareas)
             <td>${iterator.autor}</td>
             <td>${iterator.fecha}</td>
             <td>${iterator.ejecutor}</td>
-            <td>${iterator.estado}</td>
+            <td>${newestado}</td>
             <td>
             ${permisos}
             </td>
@@ -170,4 +192,34 @@ function eliminar(id)
 {
     var botonDel= document.getElementById("botonDel" + id);
     botonDel.setAttribute('href', '/eliminar?id_del=' + id);
+}
+
+function cambioEstado(id, estado)
+{
+    if(confirm('Cambiar el estado?'))
+    {
+        if(estado==0)
+        {
+            estado = 1;
+        }
+        else
+        {
+            estado = 0
+        }
+    }
+    else{
+        return -1;
+    }
+
+    var req = new XMLHttpRequest();
+    req.open('GET', "/estado?id_est=" + id + "&estado= " + estado, true);
+
+    req.addEventListener("load", function()
+    {
+        llenarTablaTareas(JSON.parse(req.response));
+    });
+    req.addEventListener("error", function(err){
+
+    });
+    req.send(null);
 }

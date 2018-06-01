@@ -5,59 +5,54 @@ var boton_mod = document.getElementById("enviar_mod");
 boton_mod.addEventListener("click", function()
 {
   var select = document.getElementById('seleccion').value
-  var optionsAutor = "";
-  var optionsEjecutor = "";
-  var id;
-  var titulo;
-  var descripcion;
-  var autor;
-  var fecha;
-  var estado;
-
+  var options= "";
   
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() 
     {
       if (this.readyState == 4 && this.status == 200) 
       {
-        var arrayTareas = JSON.parse(this.response); //DESERIALIZAR ARRAY
-        for (const iterator of arrayTareas) 
+        var datos = JSON.parse(this.response); //DESERIALIZAR ARRAY
+        var ObjTarea = datos.tarea;
+        var arrayUsuarios = datos.usuarios;
+        var nombreAutor;
+        var nombreEjecutor;
+
+        console.log(ObjTarea);
+        console.log(arrayUsuarios);
+
+        for (const iterator of arrayUsuarios) 
         {
-          if(iterator.id == select)
+          options+="<option value=" + iterator.id + "> " + iterator.nombre + " </option>";
+
+          if(iterator.id == ObjTarea.autor)
           {
-            id = iterator.id;
-            titulo = iterator.titulo;
-            descripcion = iterator.descripcion;
-            autor = iterator.autor;
-            fecha = iterator.fecha; 
-            ejecutor = iterator.ejecutor;
-            estado = iterator.estado;
+            nombreAutor = iterator.nombre;
           }
-          else{
-            optionsAutor+="<option value=" + iterator.id + "> " + iterator.autor + " </option>";
-            optionsEjecutor+="<option value=" + iterator.id + "> " + iterator.ejecutor + " </option>";
+          if(iterator.id == ObjTarea.ejecutor)
+          {
+            nombreEjecutor = iterator.nombre;
           }
-          
-          
         }
+
         document.getElementById("contenido").innerHTML = `
         <form action='/modificar' method='POST'>
-          <input type="hidden" name="id" id="id" value='` + id + `'>
+          <input type="hidden" name="id" id="id" value='` + ObjTarea.id + `'>
           <label for='titulo'> Titulo: </label>
-          <input type="text" name="titulo" id="titulo" value='` + titulo + `' required><br/>
+          <input type="text" name="titulo" id="titulo" value='` + ObjTarea.titulo + `' required><br/>
           <label for='descripcion'> Descripcion: </label>
-          <input type="text" name="descripcion" id="descripcion" value='` + descripcion + `' required><br/>
+          <input type="text" name="descripcion" id="descripcion" value='` + ObjTarea.descripcion + `' required><br/>
           <label for='autor'> Autor: </label>
           <select name='autor'>
-            <option selected> ${autor} </option>
-            ${optionsAutor}
+            <option value='${ObjTarea.autor}'selected> ${nombreAutor} </option>
+            ${options}
           </select><br/>
           <label for='fecha'> Fecha: </label>
-          <input type="text" name="fecha" id="fecha" value=` + fecha + ` required><br/>
+          <input type="text" name="fecha" id="fecha" value=` + ObjTarea.fecha + ` required><br/>
           <label for='ejecutor'> ejecutor: </label>
-          <select name='autor'>
-            <option selected> ${ejecutor} </option>
-            ${optionsEjecutor}
+          <select name='ejecutor'>
+            <option value='${ObjTarea.ejecutor}'selected> ${nombreEjecutor} </option>
+            ${options}
           </select><br/>
           <label for='estado'> Estado: </label>
           <select name='estado' id='estado'>
@@ -71,41 +66,10 @@ boton_mod.addEventListener("click", function()
       }
     };
     ;
-    xhttp.open("GET", "/ajax_mod", true);
+    xhttp.open("GET", "/ajax_mod?tarea_get=" + select, true);
     xhttp.send();
     
 });
 
-/*
-this.document.getElementById("ejemplo").onclick = function(event)
-{
-  event.prevenDefault();
-  var req = new XMLHttpRequest();
-  req.open("POST", "/ejemplopost", true);
-  req.setRequestHeader("Content-type", "application/json");
-  req.addEventListener("load", function(){
-    if(req.response=="ok")
-    {
-      alert("datos actualizados");
-    }
-    else
-    {
-      alert("error al actualizar")
-    }
-  });
-
-  req.addEventListener("error", function()
-  {
-    console.log(req.response);
-  });
-
-  var datos = {
-    valor1: document.getElementById("valor1").value,
-    valor2: document.getElementById("valor2").value
-  }
-  req.send(JSON.stringify(datos));
-}
-
-*/ 
 
 

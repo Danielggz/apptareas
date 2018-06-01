@@ -290,7 +290,7 @@ app.post('/crear', function(req, res)
     });
 });
 
-app.get('/modificar/:id_mod?', function(req, res)
+app.get('/modificar', function(req, res)
 {
 
     var id_mod = req.query.id_mod;
@@ -330,22 +330,46 @@ app.get('/modificar/:id_mod?', function(req, res)
     });  
 });
 
-app.get('/ajax_mod', function(req, res){
+app.get('/ajax_mod/:tarea_get?', function(req, res){
+
+    var tarea_get = req.query.tarea_get;
+    var datos ={
+        usuarios:[]
+    };
     fs.readFile('./www/tareas.html', 'utf-8', function(err, text)
     {
         var formulario = "";
         connection.query(`
-        SELECT tareas.id, titulo, usuarios1.id as idautor, usuarios2.id as idejecutor, descripcion, usuarios1.nombre as autor, usuarios2.nombre as ejecutor, fecha, estado
-        FROM tareas
-        RIGHT JOIN usuarios as usuarios1 ON tareas.autor = usuarios1.id
-        RIGHT JOIN usuarios as usuarios2 ON tareas.ejecutor = usuarios2.id
+        SELECT tareas.id, titulo, descripcion, autor, ejecutor, fecha, estado, usuarios.id as usuarioid, usuarios.nombre as usuarionombre FROM tareas RIGHT JOIN usuarios on tareas.id=${tarea_get} and autor=usuarios.id
         `, function(error, resultado){
            if(error)
            {
                throw error;
            }
            else{
-            res.send(JSON.stringify(resultado));
+            for (const iterator of resultado) {
+                if(iterator.id)
+                {
+                    datos.tarea = {
+                        id: iterator.id,
+                        titulo: iterator.titulo,
+                        descripcion: iterator.descripcion,
+                        autor: iterator.autor,
+                        ejecutor: iterator.ejecutor,
+                        fecha: iterator.fecha,
+                        estado: iterator.estado
+                    }
+                }
+                if(iterator.usuarioid)
+                {
+                    let user={
+                        id: iterator.usuarioid,
+                        nombre: iterator.usuarionombre
+                    }
+                    datos.usuarios.push(user);
+                }
+            }
+            res.send(JSON.stringify(datos));
            }
         });
     }); 
@@ -373,13 +397,14 @@ app.post('/modificar', function(req, res)
             if(connection.query("UPDATE tareas SET titulo='" + titulo + "', descripcion='" + descripcion + "', autor='" + autor + "', fecha='" + fecha + "', ejecutor='" + ejecutor + "', estado=" + estado + " WHERE ID=" + id))
             {
                 console.log("BASE DE DATOS ACTUALIZADA");
+                console.log(ejecutor);
                 fs.readFile('./www/tareas.html', 'utf-8', function(err, text){
 
                     var cols = "";
                     var rows = "";
                     var newtext = ""
                     connection.query(`
-                    SELECT tareas.id, titulo, descripcion, usuarios1.nombre as autor, usuarios2.nombre as ejecutor, fecha, estado 
+                    SELECT tareas.id, titulo, descripcion, usuarios1.nombre as autor, usuarios2.nombre as ejecutor, fecha, estado
                     FROM tareas
                     INNER JOIN usuarios as usuarios1 ON tareas.autor = usuarios1.id
                     INNER JOIN usuarios as usuarios2 ON tareas.ejecutor = usuarios2.id
@@ -461,6 +486,65 @@ app.post('/eliminar', function(req, res){
     connection.query("DELETE FROM tareas WHERE id=" + idtarea);
     console.log("TAREA ELIMINADA CON ÉXITO");
     res.redirect('/tareas');
+
+});
+
+app.get('/estado/:id_est?:estado?', function(req, res){
+    var estado=req.query.estado;
+    var id = req.query.id_est;
+
+    connection.query("UPDATE tareas SET estado=" + estado + " WHERE id=" + id, function(error, resultado){
+        if(error)
+        {
+            throw error;
+        }
+        else
+        {
+            console.log("ESTADO ACTUALIZADO");
+            connection.query(`
+            SELECT tareas.id, titulo, descripcion, usuarios1.nombre as autor, usuarios2.nombre as ejecutor, fecha, estado, usuarios1.id as autorid, usuarios2.id as ejecutorid
+            FROM tareas
+            INNER JOIN usuarios as usuarios1 ON tareas.autor = usuarios1.id
+            INNER JOIN usuarios as usuarios2 ON tareas.ejecutor = usuarios2.id
+            `, function(error, resultado)
+            {
+                if(error)
+                {
+                    throw error;
+                }
+                else
+                {
+                    for(let i=0; i<resultado.length; i++)
+                    {
+                        var d=new Date(String(resultado[i].fecha));
+
+                        var formatFecha = [d.getDate(),d.getMonth(),d.getFullYear()].join('/');
+                        resultado[i].fecha = formatFecha;
+                    }
+                    resultado.forEach(element => {
+                        if(req.session.idUser==element.autorid&&req.session.idUser==element.ejecutorid)
+                        {
+                            element.permiso = 0; //AUTOR Y EJECUTOR
+                        }
+                        if(req.session.idUser==element.autorid&&req.session.idUser!=element.ejecutorid)
+                        {
+                            element.permiso = 1; //AUTOR
+                        }
+                        if(req.session.idUser!=element.autorid&&req.session.idUser==element.ejecutorid)
+                        {
+                            element.permiso = 2; //EJECUTOR
+                        }
+                        if(req.session.idUser!=element.autorid&&req.session.idUser!=element.ejecutorid)
+                        {
+                            element.permiso = 3; //NADA
+                        }
+                            
+                    });
+                    res.send(JSON.stringify(resultado));
+                }
+            });
+        }   
+    });
 
 });
 
