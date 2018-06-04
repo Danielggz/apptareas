@@ -1,8 +1,5 @@
 window.onload=function()
 {
-
-    document.getElementById('foto').addEventListener('change', handleFileSelect, false);
-    //NUEVOUSUARIO.HTML
     document.getElementById("pwd2").addEventListener("blur", function()
     {
         if(document.getElementById("pwd").value!=document.getElementById("pwd2").value)
@@ -13,6 +10,10 @@ window.onload=function()
         }
         else
         {
+            if(document.getElementById("avatar").value!=undefined)
+            {
+                document.getElementById('avatar').addEventListener('change', leerArchivo, false);
+            }
             document.getElementById("enviar").disabled = false; 
         }
     });
@@ -22,10 +23,22 @@ window.onload=function()
         document.getElementById("mensajes").setAttribute("style", "display: none");
     });
 
+
+    function leerArchivo(evt)
+    {
+        var file = evt.target.files[0];
+        var reader = new FileReader();
+        reader.onload=function(f){
+            document.getElementById('hiddenAvatar').value = f.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
    
+    /*
     function handleFileSelect(evt)
     {
         var files = evt.target.files; // FileList object
+        console.log(files);
 
         var output = [];
         var result;
@@ -51,7 +64,7 @@ window.onload=function()
         var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() 
                 {
-                    location.href="/";
+                    location.href;
                 };
             xhttp.open("POST", "/imagenesBD", true);
             xhttp.setRequestHeader("Content-type", "appplication/json");
@@ -60,6 +73,7 @@ window.onload=function()
             });
             xhttp.send();
     }
+    */
 
     /*
         this.document.getElementById("ejemplo").onclick = function(event)

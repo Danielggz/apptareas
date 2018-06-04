@@ -13,7 +13,7 @@
 <body>
         <div id="contenedor">
 
-             <div id="titulo">
+            <div id="titulo">
                 <h1>Nuevo usuario</h1>
             </div>
 
@@ -23,7 +23,8 @@
                     <input type="text" name="usuario" id="usuario" placeholder="Introduce nombre de usuario" required>
                     <input type="password" name="pwd" id="pwd" placeholder="Introduce una contraseña" required>
                     <input type="password" name="pwd2" id="pwd2" placeholder="Repite la contraseña" required><br/>
-                    <input type="file" id="foto" name="foto" accept="image/*"><br/><br/>
+                    <input type="file" id="avatar" name="avatar" accept="image/*"><br/><br/>
+                    <input type="hidden" name="hiddenAvatar" id="hiddenAvatar"/>
                     <input type="submit" id="enviar" disabled>
                 </form>
             </div>
@@ -32,9 +33,11 @@
                 [mensaje]
             </div>
 
-            <output id="list">
-            
-            </output>
+            <div id="barraUsuarios">
+                <img id="imagen" src="" alt="la imagen" style="height: 5%; width: 5%">
+            </div>
+
+
        </div > 
         
 </body>

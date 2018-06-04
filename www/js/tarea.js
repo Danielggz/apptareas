@@ -1,23 +1,26 @@
-window.onload=function()
-{ 
+window.onload = function () {
     var contenido = document.getElementById("contenido");
     var contenido2 = document.getElementById("contenido2");
-    console.log(contenido);
-    if(contenido.innerText ==  "[contenido]")
-    {
+    if (contenido.innerText == "[contenido]") {
         verTablaTareas();
     }
 
-
-
-
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() 
-    {
-        if (this.readyState == 4 && this.status == 200) 
-        {
-            var currentUser = this.responseText;
-            document.getElementById("currentUser").innerHTML = "El usuario actual es: " + currentUser;
+    xhttp.onreadystatechange = function () {
+        console.log(xhttp.readyState,xhttp.status);
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(xhttp.response)
+            var resp=JSON.parse(xhttp.response);
+            var currentUser = resp.usuario;
+            document.getElementById("imagen").src =resp.avatar;
+            document.getElementById("username").innerText=currentUser;
+            // if (cargarImagen() != undefined) {
+            //     document.getElementById("currentUser").innerHTML = '<img id="avatar" src="' + cargarImagen + '" alt="imagen perfil" style="height: 45px; width: 55px">' + " " + currentUser;
+            // }
+            // else {
+            //     console.log("hola");
+            //     document.getElementById("currentUser").innerHTML = '<img id="avatar" src="img/imgUser.png" alt="imagen perfil" style="height: 45px; width: 55px">' + " " + currentUser;
+            // }
         }
     };
 
@@ -29,28 +32,23 @@ window.onload=function()
     var botonVer = document.getElementById("verTareas");
     var botonAdd = document.getElementById("addTarea");
 
-
-    botonVer.addEventListener("click", function(){
+    botonVer.addEventListener("click", function () {
         botonAdd.setAttribute("class", "");
         botonAdd.setAttribute("class", "addTarea");
         verTablaTareas();
     });
 
-    datosUser.addEventListener("click", function()
-    {
-  
+    datosUser.addEventListener("click", function () {
+
         var loader = document.getElementById("loader");
 
         loader.setAttribute("class", "mostrar loader");
         var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() 
-        {
-            if (this.readyState == 4 && this.status == 200) 
-            {
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
                 var arrayUsuarios = JSON.parse(this.response); //DESERIALIZAR ARRAY
 
-                for (const iterator of arrayUsuarios) 
-                {
+                for (const iterator of arrayUsuarios) {
                     var id = iterator.id;
                     var nombre = iterator.nombre;
                     var usuario = iterator.usuario;
@@ -72,77 +70,84 @@ window.onload=function()
                 `
             }
         };
-    xhttp.open("GET", "/datosUser", true);
-    xhttp.send();
+        xhttp.open("GET", "/datosUser", true);
+        xhttp.send();
 
     });
 
-    cerrarSesion.addEventListener("click", function()
-    {
+    cerrarSesion.addEventListener("click", function () {
         var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() 
-            {
-                location.href="/";
-            };
+        xhttp.onreadystatechange = function () {
+            location.href = "/";
+        };
         xhttp.open("GET", "/cerrarSesion", true);
         xhttp.send();
     });
 }
 
-function verTablaTareas()
-{
+function cargarImagen() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var respuesta = JSON.parse(xhttp.response);
+            var avatar = document.getElementById('avatar');
+            avatar.src = respuesta.avatar;
+        };
+    }
+    xhttp.open("GET", "/imgUser", true);
+    xhttp.send();
+}
+
+function verTablaTareas() {
     var req = new XMLHttpRequest();
     req.open('GET', '/verTareas', true);
 
-    req.addEventListener("load", function()
-    {
+    req.addEventListener("load", function () {
         llenarTablaTareas(JSON.parse(req.response));
     });
-    req.addEventListener("error", function(err){
+    req.addEventListener("error", function (err) {
 
     });
     req.send(null);
 }
 
-function llenarTablaTareas(listaTareas)
-{
+function llenarTablaTareas(listaTareas) {
     var text = "";
     var cols = "";
     var filas = "";
     for (const iterator of listaTareas) {
         let permisos = '';
-        let newestado ='';
+        let newestado = '';
 
-        switch(iterator.permiso){
+        switch (iterator.permiso) {
             case 0:
                 permisos = `
                 <a id='botonMod${iterator.id}' onclick='modificar(${iterator.id});'> <i class="fas fa-pen-square"> </i> </a>
                 <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i></a>
                 <a id='botonEst${iterator.id}' onclick='cambioEstado(${iterator.id}, ${iterator.estado});'> <i class="fas fa-check-square"></i> </a>
                 `
-            break;
+                break;
 
             case 1:
                 permisos = `
                 <a id='botonMod${iterator.id}' onclick='modificar(${iterator.id});'> <i class="fas fa-pen-square"> </i> </a>
                 <a id='botonDel${iterator.id}' onclick='eliminar(${iterator.id});'> <i class="fas fa-trash"></i> </a>`
-            break;
+                break;
 
             case 2:
                 permisos = `
                 <a id='botonEst${iterator.id}' onclick='cambioEstado(${iterator.id}, ${iterator.estado});'> <i class="fas fa-check-square"></i> </a>
                 `
-            break;
+                break;
 
             case 3:
-            break;
+                break;
         }
 
-        if(iterator.estado==0)
-        {
+        if (iterator.estado == 0) {
             newestado = 'En proceso';
         }
-        else{
+        else {
             newestado = 'Finalizada';
         }
 
@@ -159,9 +164,9 @@ function llenarTablaTareas(listaTareas)
             </td>
             </tr>
             `
-        cols+=filas;
-        
-        
+        cols += filas;
+
+
     }
     text = `
     <table>
@@ -182,43 +187,36 @@ function llenarTablaTareas(listaTareas)
     document.getElementById("contenido").innerHTML = text;
 }
 
-function modificar(id)
-{
+function modificar(id) {
     var botonMod = document.getElementById("botonMod" + id);
     botonMod.setAttribute("href", "/modificar?id_mod=" + id);
 }
 
-function eliminar(id)
-{
-    var botonDel= document.getElementById("botonDel" + id);
+function eliminar(id) {
+    var botonDel = document.getElementById("botonDel" + id);
     botonDel.setAttribute('href', '/eliminar?id_del=' + id);
 }
 
-function cambioEstado(id, estado)
-{
-    if(confirm('Cambiar el estado?'))
-    {
-        if(estado==0)
-        {
+function cambioEstado(id, estado) {
+    if (confirm('Cambiar el estado?')) {
+        if (estado == 0) {
             estado = 1;
         }
-        else
-        {
+        else {
             estado = 0
         }
     }
-    else{
+    else {
         return -1;
     }
 
     var req = new XMLHttpRequest();
     req.open('GET', "/estado?id_est=" + id + "&estado= " + estado, true);
 
-    req.addEventListener("load", function()
-    {
+    req.addEventListener("load", function () {
         llenarTablaTareas(JSON.parse(req.response));
     });
-    req.addEventListener("error", function(err){
+    req.addEventListener("error", function (err) {
 
     });
     req.send(null);

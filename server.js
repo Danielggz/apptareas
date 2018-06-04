@@ -118,7 +118,7 @@ app.post('/nuevousu', function(req, res){
     var nombre = req.body.nombre;
     var usuario = req.body.usuario;
     var pwd = req.body.pwd;
-
+    var avatar = req.body.hiddenAvatar;
     
     connection.query("SELECT usuario from usuarios", function(error, resultado){
         if(error)
@@ -133,8 +133,7 @@ app.post('/nuevousu', function(req, res){
                 res.redirect("/");
             }
             else{
-                connection.query("INSERT INTO usuarios VALUES('', '" + nombre + "', '" + usuario + "', '" + pwd + "' )");
-                console.log("NUEVO USUARIO " + usuario + " AGREGADO CON ÉXITO APLASTANTE");
+                connection.query("INSERT INTO usuarios VALUES('', '" + nombre + "', '" + usuario + "', '" + pwd + "', '" + avatar + "' )");
                 
                 res.redirect("/");
             }
@@ -551,9 +550,47 @@ app.get('/estado/:id_est?:estado?', function(req, res){
 app.get('/currentUser', function(req, res)
 {
     var usuario = req.session.user;
-
-    res.send(usuario);
+    connection.query("SELECT avatar FROM usuarios WHERE id=" + req.session.idUser, function(error, resultado)
+    {
+        if(error)
+        {
+            throw error;
+        }
+        else
+        {
+           var datos={
+               usuario:usuario,
+               avatar:resultado[0].avatar
+           }
+            
+            res.send(JSON.stringify(datos));
+            
+        }
+    });
+    
 });
+
+
+app.get('/imgUser', function(req, res)
+{
+    connection.query("SELECT avatar FROM usuarios WHERE id=" + req.session.idUser, function(error, resultado)
+        {
+            if(error)
+            {
+                throw error;
+            }
+            else
+            {
+               var datos={
+                   avatar:resultado[0].avatar
+               }
+                
+                res.send(JSON.stringify(datos));
+                
+            }
+        });
+});
+
 
 app.get("/datosUser", function(req, res)
 {
@@ -569,7 +606,7 @@ app.get("/datosUser", function(req, res)
             {
                 setTimeout(function(){
                     res.send(JSON.stringify(resultado));
-                }, 5000); //SIMULADOR DE LENTITUD
+                }, 500); //SIMULADOR DE LENTITUD
             }
         });
     }); 
